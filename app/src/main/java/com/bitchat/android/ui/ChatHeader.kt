@@ -652,7 +652,8 @@ fun ChatHeaderContent(
     onTripleClick: () -> Unit,
     onShowAppInfo: () -> Unit,
     onLocationChannelsClick: () -> Unit,
-    onLocationNotesClick: () -> Unit
+    onLocationNotesClick: () -> Unit,
+    onBrandLongPress: (() -> Unit)? = null
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -676,7 +677,8 @@ fun ChatHeaderContent(
                 onSidebarClick = onSidebarClick,
                 onLocationChannelsClick = onLocationChannelsClick,
                 onLocationNotesClick = onLocationNotesClick,
-                viewModel = viewModel
+                viewModel = viewModel,
+                onBrandLongPress = onBrandLongPress
             )
         }
     }
@@ -716,7 +718,8 @@ private fun MainHeader(
     onSidebarClick: () -> Unit,
     onLocationChannelsClick: () -> Unit,
     onLocationNotesClick: () -> Unit,
-    viewModel: ChatViewModel
+    viewModel: ChatViewModel,
+    onBrandLongPress: (() -> Unit)? = null
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val palette = LocalBitchatPalette.current
@@ -744,6 +747,7 @@ private fun MainHeader(
                 onTripleClick = onTripleTitleClick,
                 contentDescription = stringResource(R.string.cd_open_about),
                 modifier = Modifier.size(HeaderTapTarget),
+                onLongPress = onBrandLongPress
             )
 
             // Nudge toward the brand glyph: the 44.dp tap target leaves more optical gap than the

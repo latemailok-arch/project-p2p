@@ -1243,12 +1243,20 @@ private fun ConversationRow(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // DiceBear procedural identicon: seed from Noise public key fingerprint (aggressive offline cache)
+        val diceBearSeed = remember(conversation.conversationID, conversation.nostrPubkey, conversation.connectedPeerID) {
+            runCatching { viewModel.getPeerFingerprintForDisplay(conversation.conversationID) }.getOrNull()
+                ?: conversation.nostrPubkey
+                ?: conversation.connectedPeerID
+                ?: conversation.conversationID
+        }
         PeerAvatar(
             name = baseNameRaw,
             color = assignedColor,
             isFavorite = isFavorite,
             theyFavoritedUs = theyFavoritedUs,
             isVerified = isVerified,
+            publicKey = diceBearSeed,
             badge = {
                 when {
                     conversation.isConnected -> Icon(
@@ -1493,6 +1501,10 @@ private fun PeerItem(
     )
     val baseColor = if (isMe) palette.accentOrange else assignedColor
 
+    // DiceBear seed from Noise fingerprint for this peer - cached offline
+    val meshDiceSeed = remember(peerID) {
+        runCatching { viewModel.getPeerFingerprintForDisplay(peerID) }.getOrNull() ?: peerID
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1506,6 +1518,7 @@ private fun PeerItem(
             isFavorite = isFavorite,
             theyFavoritedUs = theyFavoritedUs,
             isVerified = isVerified,
+            publicKey = meshDiceSeed,
             badge = {
                 when {
                     isConnected -> Icon(

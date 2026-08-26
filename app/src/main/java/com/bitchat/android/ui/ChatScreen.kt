@@ -98,6 +98,8 @@ fun ChatScreen(viewModel: ChatViewModel) {
     var initialViewerIndex by remember { mutableStateOf(0) }
     var forceScrollToBottom by remember { mutableStateOf(false) }
     var isScrolledUp by remember { mutableStateOf(false) }
+    var showMeshMap by remember { mutableStateOf(false) }
+    var showMeshDiagnostics by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedPrivatePeer) {
         messageText = TextFieldValue(
@@ -206,6 +208,27 @@ fun ChatScreen(viewModel: ChatViewModel) {
             } else {
                 messages // Mesh timeline
             }
+        }
+    }
+
+    // Phase 3: On-Device Smart Reply - hook into local message repository, pass last 3-4 messages to ML Kit
+    var smartReplySuggestions by remember { mutableStateOf(emptyList<String>()) }
+    LaunchedEffect(displayMessages, nickname) {
+        if (displayMessages.isEmpty()) {
+            smartReplySuggestions = emptyList()
+            return@LaunchedEffect
+        }
+        // Only generate if last message is from remote (not local) - ML Kit returns empty if last is local
+        val last = displayMessages.lastOrNull()
+        if (last?.sender == nickname) {
+            smartReplySuggestions = emptyList()
+            return@LaunchedEffect
+        }
+        com.bitchat.android.smartreply.SmartReplyManager.fetchSuggestions(
+            messages = displayMessages,
+            localNickname = nickname
+        ) { suggestions ->
+            smartReplySuggestions = suggestions
         }
     }
 
@@ -443,7 +466,15 @@ fun ChatScreen(viewModel: ChatViewModel) {
                 currentChannel = currentChannel,
                 nickname = nickname,
                 colorScheme = colorScheme,
-                showMediaButtons = showMediaButtons
+                showMediaButtons = showMediaButtons,
+                smartReplySuggestions = smartReplySuggestions,
+                onSmartReplyClick = { suggestion: String ->
+                    messageText = TextFieldValue(
+                        text = suggestion,
+                        selection = TextRange(suggestion.length)
+                    )
+                    // Optional: could auto-send, but we let user edit/send manually to avoid accidental sends
+                }
             )
           }
         }
@@ -462,7 +493,8 @@ fun ChatScreen(viewModel: ChatViewModel) {
             onLocationNotesClick = {
                 nearbyNotesController.reveal()
                 showLocationNotesSheet = true
-            }
+            },
+            onBrandLongPress = { showMeshDiagnostics = true }
         )
 
         // Scroll-to-bottom floating button
@@ -502,6 +534,25 @@ fun ChatScreen(viewModel: ChatViewModel) {
                 }
             }
         }
+
+        // Phase 4: Local Mesh Map FAB - always visible above composer
+        androidx.compose.material3.FloatingActionButton(
+            onClick = { showMeshMap = true },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, bottom = composerHeight + 8.dp)
+                .zIndex(1.5f)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .windowInsetsPadding(WindowInsets.ime),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ) {
+            Icon(
+                painter = androidx.compose.ui.res.painterResource(com.bitchat.android.R.drawable.ic_spec_globe),
+                contentDescription = "Open Local Mesh Map",
+                modifier = Modifier.size(22.dp)
+            )
+        }
     }
 
     // Full-screen image viewer - separate from other sheets to allow image browsing without navigation
@@ -512,6 +563,21 @@ fun ChatScreen(viewModel: ChatViewModel) {
             onClose = { showFullScreenImageViewer = false }
         )
     }
+
+    // Phase 4: Local Mesh Map - OSM tile layer with Geohash nodes
+    if (showMeshMap) {
+        com.bitchat.android.ui.map.LocalMeshMapScreen(
+            viewModel = viewModel,
+            onBack = { showMeshMap = false }
+        )
+    }
+
+    // Phase 5: Mesh Health & Diagnostics hidden screen - long-press app bar
+    com.bitchat.android.ui.debug.MeshHealthDashboardSheet(
+        isVisible = showMeshDiagnostics,
+        onDismiss = { showMeshDiagnostics = false },
+        viewModel = viewModel
+    )
 
     // Dialogs and Sheets
     ChatDialogs(
@@ -645,6 +711,8 @@ fun ChatInputSection(
     colorScheme: ColorScheme,
     showMediaButtons: Boolean,
     recorderFactory: ((String?, String?) -> com.bitchat.android.features.voice.VoiceRecorder)? = null,
+    smartReplySuggestions: List<String> = emptyList(),
+    onSmartReplyClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -715,6 +783,15 @@ fun ChatInputSection(
                 HorizontalDivider(thickness = 1.dp, color = colorScheme.outlineVariant)
             }
         }
+        // Phase 3: On-Device Smart Reply chips - directly above chat input box, entirely on-device
+        com.bitchat.android.smartreply.SmartReplyChips(
+            suggestions = smartReplySuggestions,
+            onSuggestionClick = onSmartReplyClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (smartReplySuggestions.isNotEmpty()) {
+            HorizontalDivider(thickness = 1.dp, color = colorScheme.outlineVariant.copy(alpha = 0.5f))
+        }
         MessageInput(
             value = messageText,
             onValueChange = onMessageTextChange,
@@ -761,7 +838,8 @@ private fun ChatFloatingHeader(
     onShowAppInfo: () -> Unit,
     onPanicClear: () -> Unit,
     onLocationChannelsClick: () -> Unit,
-    onLocationNotesClick: () -> Unit
+    onLocationNotesClick: () -> Unit,
+    onBrandLongPress: (() -> Unit)? = null
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val locationManager = remember { com.bitchat.android.geohash.LocationChannelManager.getInstance(context) }
@@ -806,7 +884,8 @@ private fun ChatFloatingHeader(
                 // Ensure location is loaded before showing sheet
                 locationManager.refreshChannels()
                 onLocationNotesClick()
-            }
+            },
+            onBrandLongPress = onBrandLongPress
         )
     }
 }

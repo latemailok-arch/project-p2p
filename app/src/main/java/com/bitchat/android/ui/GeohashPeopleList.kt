@@ -296,6 +296,7 @@ private fun GeohashPersonItem(
     )
     val baseColor = if (isMe) palette.accentOrange else assignedColor
 
+    // Nostr pubkey hex is deterministic seed for DiceBear identicon - offline cached via Coil disk cache
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -306,6 +307,7 @@ private fun GeohashPersonItem(
         PeerAvatar(
             name = baseNameRaw,
             color = baseColor,
+            publicKey = person.id,
             badge = {
                 Icon(
                     painter = painterResource(statusIconRes),

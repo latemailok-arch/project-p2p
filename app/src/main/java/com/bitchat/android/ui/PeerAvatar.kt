@@ -34,8 +34,24 @@ internal fun PeerAvatar(
     isFavorite: Boolean = false,
     theyFavoritedUs: Boolean = false,
     isVerified: Boolean = false,
-    badge: (@Composable () -> Unit)? = null
+    badge: (@Composable () -> Unit)? = null,
+    publicKey: String? = null
 ) {
+    // If Noise publicKey is available, use DiceBear procedural identicon with aggressive offline caching
+    // Otherwise fallback to initials (offline-safe, no network)
+    if (!publicKey.isNullOrBlank()) {
+        DiceBearAvatar(
+            publicKey = publicKey,
+            name = name,
+            color = color,
+            modifier = modifier,
+            isFavorite = isFavorite,
+            theyFavoritedUs = theyFavoritedUs,
+            isVerified = isVerified,
+            badge = badge
+        )
+        return
+    }
     val palette = LocalBitchatPalette.current
     val colorScheme = MaterialTheme.colorScheme
 

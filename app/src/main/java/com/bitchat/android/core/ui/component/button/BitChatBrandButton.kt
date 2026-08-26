@@ -1,6 +1,7 @@
 package com.bitchat.android.core.ui.component.button
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -31,6 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private val MultiClickThreshold = 300.milliseconds
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BitChatBrandButton(
     onClick: () -> Unit,
@@ -39,6 +41,7 @@ fun BitChatBrandButton(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.primary,
     iconSize: Dp = 22.dp,
+    onLongPress: (() -> Unit)? = null,
 ) {
     var tapCount by remember { mutableIntStateOf(0) }
     var resetJob by remember { mutableStateOf<Job?>(null) }
@@ -52,32 +55,36 @@ fun BitChatBrandButton(
     // A plain Box rather than an IconButton: IconButton insists on drawing a ripple, which was the
     // only press background left in the header once every other control moved to scale-only
     // feedback.
+    val currentOnLongPress by rememberUpdatedState(onLongPress)
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClickLabel = contentDescription
-            ) {
-                tapCount += 1
-                resetJob?.cancel()
+                onClickLabel = contentDescription,
+                onLongClickLabel = if (onLongPress != null) "Open mesh diagnostics" else null,
+                onLongClick = if (onLongPress != null) {{ currentOnLongPress?.invoke() }} else null,
+                onClick = {
+                    tapCount += 1
+                    resetJob?.cancel()
 
-                if (tapCount == 3) {
-                    tapCount = 0
-                    resetJob = null
-                    currentOnTripleClick()
-                } else {
-                    resetJob = coroutineScope.launch {
-                        delay(MultiClickThreshold)
-                        if (tapCount == 1) {
-                            currentOnClick()
-                        }
+                    if (tapCount == 3) {
                         tapCount = 0
                         resetJob = null
+                        currentOnTripleClick()
+                    } else {
+                        resetJob = coroutineScope.launch {
+                            delay(MultiClickThreshold)
+                            if (tapCount == 1) {
+                                currentOnClick()
+                            }
+                            tapCount = 0
+                            resetJob = null
+                        }
                     }
                 }
-            },
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(

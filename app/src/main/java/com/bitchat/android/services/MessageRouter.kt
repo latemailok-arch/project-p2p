@@ -375,6 +375,10 @@ class MessageRouter private constructor(
         }
     }
 
+    // Dashboard: expose outbox snapshot for health diagnostics (peer -> queued count)
+    fun getOutboxSnapshot(): Map<String, Int> = outbox.mapValues { it.value.size }
+    fun getOutboxTotalCount(): Int = outbox.values.sumOf { it.size }
+
     // Called when mesh peer list changes; attempt to flush any matching outbox entries
     fun onPeersUpdated(peers: List<String>) {
         peers.forEach { pid ->

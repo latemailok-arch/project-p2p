@@ -66,6 +66,9 @@ exifinterface = "1.4.2"
 # CameraX / ML Kit
 camerax = "1.6.1"
 mlkit-barcode = "17.3.0"
+coil = "2.7.0"
+mlkit-smart-reply = "17.0.2"
+osmdroid = "6.1.18"
 
 # Testing
 junit = "4.13.2"
@@ -149,6 +152,11 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
 androidx-camera-compose = { module = "androidx.camera:camera-compose", version.ref = "camerax" }
 mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
+mlkit-smart-reply = { module = "com.google.mlkit:smart-reply", version.ref = "mlkit-smart-reply" }
+osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }

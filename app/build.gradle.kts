@@ -184,6 +184,17 @@ dependencies {
     // Google Play Services Location
     implementation(libs.gms.location)
 
+    // Phase 2: Procedural Identity (DiceBear + Coil)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+    implementation(libs.coil)
+
+    // Phase 3: On-Device Intelligence (ML Kit Smart Reply)
+    implementation(libs.mlkit.smart.reply)
+
+    // Phase 4: Local Node Mapping (OSM)
+    implementation(libs.osmdroid.android)
+
     // Security preferences
     implementation(libs.androidx.security.crypto)
     
