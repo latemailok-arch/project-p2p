@@ -1,6 +1,6 @@
 # Client rewrite compatibility contracts
 
-This document defines the behavior a from-scratch BitChat client must preserve.
+This document defines the behavior a from-scratch PingChat client must preserve.
 The executable source of truth is the JVM test suite under
 `app/src/test/**/contracts`, together with the pre-existing protocol, security,
 mesh, and state tests.

@@ -5,7 +5,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <!--
-      BitChatIcon glyph (About button) in app primary green (#32D74B),
+      PingChat icon glyph in app primary green (#32D74B),
       with pixel "BIT" in black. Sized to keep clear padding inside the circle.
     -->
     <group

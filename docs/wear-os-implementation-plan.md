@@ -19,12 +19,12 @@
 
 ## 1. Context for a fresh coding agent
 
-- **Reference app**: this repository (`bitchat-android`) is a fully working, decentralized BLE mesh
-  chat client. Single Gradle module `:app`, root package `com.bitchat.android`, applicationId
-  `com.bitchat.droid`. See `AGENTS.md` for the full architecture overview.
-- **Goal**: a new `:wear` Gradle module (applicationId `com.bitchat.watch`) — a standalone Wear OS
+- **Reference app**: this repository (`pingchat-android`) is a fully working, decentralized BLE mesh
+  chat client. Single Gradle module `:app`, root package `com.pingchat.android`, applicationId
+  `com.pingchat.droid`. See `AGENTS.md` for the full architecture overview.
+- **Goal**: a new `:wear` Gradle module (applicationId `com.pingchat.watch`) — a standalone Wear OS
   app for the Pixel Watch. **Bluetooth mesh only**: global chat, Noise-encrypted direct messages,
-  and receiving/displaying files & images. It must be a fully interoperable bitchat client: scan,
+  and receiving/displaying files & images. It must be a fully interoperable pingchat client: scan,
   advertise, connect, relay, handshake, and exchange messages with the Android (and iOS) apps.
 - **Explicitly out of scope**: no internet features (no Nostr, no Tor/Arti, no relays), no GPS /
   geohash / location channels, no Wi-Fi Aware, no hotspot/APK sharing, no voice notes recording.
@@ -39,7 +39,7 @@
 
 Wear OS is Android. `android.util.Log`, `android.bluetooth.*`, `EncryptedSharedPreferences`
 (androidx.security), BouncyCastle, and coroutines all work on the watch, so the vast majority of
-the bitchat protocol stack compiles unmodified.
+the pingchat protocol stack compiles unmodified.
 
 In `wear/build.gradle.kts`:
 
@@ -97,7 +97,7 @@ Wear Compose Material3 (round-screen safe by default):
 
 - Pixel Watch connected via ADB (target device for all milestones; screencaps via
   `adb exec-out screencap`).
-- Two phones running the Android bitchat app, also on ADB, for interop testing (used heavily from
+- Two phones running the Android pingchat app, also on ADB, for interop testing (used heavily from
   M6; manual interop checks from M2 onward).
 - Design verification: at every UI milestone, take ADB screencaps of every screen and review them
   for round-screen clipping, element visibility, contrast, and touch-target size. A milestone does
@@ -132,7 +132,7 @@ Wear Compose Material3 (round-screen safe by default):
 **Success criteria**: `./gradlew :wear:assembleDebug` green; app launches on the watch;
 `git diff --name-only` shows no changes under `app/src/`.
 **Result**: PASSED — installed on Pixel Watch 3 (serial 4C201JEAYW0020), launch screencap shows
-"bitchat" wordmark (green `#32D74B`, Geist Mono, black background) correctly centered on the
+"pingchat" wordmark (green `#32D74B`, Geist Mono, black background) correctly centered on the
 round display. No `app/src/` changes.
 
 ---
@@ -151,8 +151,8 @@ filtered mirror of `app/src/main/java` into `wear/build/sharedSrc` which is adde
 root. App sources remain the single source of truth; nothing is hand-copied. Excluded:
 `BluetoothMeshService`/`UnifiedMeshService` (phone monolith / Wi-Fi Aware multiplexer — the watch
 composes its own service in M2). Two tiny wear-owned shims satisfy the only unresolvable
-references from shared code: `com.bitchat.android.service.MeshServiceHolder` (BLE-toggle
-interface, null) and `com.bitchat.android.wifiaware.WifiAwareController` (no-op).
+references from shared code: `com.pingchat.android.service.MeshServiceHolder` (BLE-toggle
+interface, null) and `com.pingchat.android.wifiaware.WifiAwareController` (no-op).
 
 **Success criteria**: the entire shared stack (protocol, noise, crypto, identity, mesh, model,
 AppStateStore) compiles into `:wear`; both modules' unit tests pass; `app/src/` untouched.
@@ -170,7 +170,7 @@ AppStateStore) compiles into `:wear`; both modules' unit tests pass; `app/src/` 
 - [ ] Internal debug screen: discovered peers with RSSI (temporary, replaced by real UI in M3/M4)
 - [ ] Manual interop check: watch and one phone mutually discover
 
-**Success criteria**: the phone's bitchat app lists the watch as a connected peer and vice versa
+**Success criteria**: the phone's pingchat app lists the watch as a connected peer and vice versa
 (logcat + screencap evidence); mesh survives the screen turning off (ambient mode) for 5 minutes.
 **Result**: PASSED — phone↔watch mutual discovery via `mesh_lab.py setup`; 5-minute screen-off
 ambient test: `WearMeshForegroundService` kept the process alive, the GATT link stayed up
@@ -188,7 +188,7 @@ learning the direct address↔peerID mapping via `DirectLinkAnnouncementPolicy.o
 
 - [ ] Nickname onboarding; identity announcement over the mesh
 - [ ] Send/receive/relay public `BitchatMessage`s (relay/TTL comes free from shared mesh code)
-- [ ] Chat timeline UI (`ScalingLazyColumn`, message bubbles per bitchat style, peer colors,
+- [ ] Chat timeline UI (`ScalingLazyColumn`, message bubbles per pingchat style, peer colors,
   timestamps) + composer (IME + `RecognizerIntent` dictation) + incoming-message haptics
 - [ ] Design check: ADB screencaps of onboarding, chat (empty/populated), composer; review for
   round-screen clipping/visibility/contrast
@@ -289,7 +289,7 @@ auto-initiates the handshake. Session recovery after watch force-stop verified b
 - [x] Wear debug-only `TestHookReceiver` (`wear/src/debug/`) mirroring the phone's command set:
   `ping`, `start`, `stop`, `whoami`, `set_nickname`, `scan`, `peers`, `connect`, `handshake`,
   `session`, `announce`, `broadcast_msg`, `dm_send`, `dm_recv`, `msg_recv`, `raw_send`, `state`,
-  `clear_results` — broadcast action `com.bitchat.watch.TEST_HOOK`, same JSON-result-file protocol
+  `clear_results` — broadcast action `com.pingchat.watch.TEST_HOOK`, same JSON-result-file protocol
   (`file_*` excluded while M5 is deferred)
 - [x] Extend `tools/release_gate/mesh_lab.py`: `--serial-watch` argument and phone↔watch scenarios
   (`dm`, `broadcast`, `raw`, `session_recovery`, `identity_reset`, `all`), reusing
@@ -301,7 +301,7 @@ auto-initiates the handshake. Session recovery after watch force-stop verified b
 exits 0 with evidence files; no manual intervention.
 **Result**: PASSED — `scenario all` (dm, broadcast, raw, session_recovery, identity_reset)
 green in 73 s, evidence in `/tmp/meshlab-evidence/all-evidence.json`. Host-side robustness fixes
-in `mesh_lab.py`: `WatchDevice` (package/hook/permissions/activity for `com.bitchat.watch`),
+in `mesh_lab.py`: `WatchDevice` (package/hook/permissions/activity for `com.pingchat.watch`),
 `launch()` now verifies top-resumed activity (a frozen background process silently hangs test-hook
 commands — observed on Wear), `wake()` sets `stay_on_while_plugged_in` (otherwise the charging
 screen takes foreground and the app gets frozen), `ensure_direct_link` retries while announcing
@@ -345,7 +345,7 @@ pattern lock; mesh_lab sets `stay_on_while_plugged_in` etc. automatically.
 
 # Install & launch on the watch
 adb -s <watch-serial> install -r -g wear/build/outputs/apk/debug/wear-debug.apk
-adb -s <watch-serial> shell monkey -p com.bitchat.watch -c android.intent.category.LAUNCHER 1
+adb -s <watch-serial> shell monkey -p com.pingchat.watch -c android.intent.category.LAUNCHER 1
 
 # Screencap (design checks)
 adb -s <watch-serial> exec-out screencap -p > watch.png
@@ -359,9 +359,9 @@ python3 tools/release_gate/mesh_lab.py scenario all \
   --serial-a <phone-serial> --serial-watch <watch-serial> --out /tmp/meshlab-evidence
 
 # Ad-hoc test-hook commands (watch)
-adb -s <watch-serial> shell am broadcast -a com.bitchat.watch.TEST_HOOK \
-  -n com.bitchat.watch/.testhook.WearTestHookReceiver --es cmd state --es id s1
-adb -s <watch-serial> shell run-as com.bitchat.watch cat cache/testhook/results/s1.json
+adb -s <watch-serial> shell am broadcast -a com.pingchat.watch.TEST_HOOK \
+  -n com.pingchat.watch/.testhook.WearTestHookReceiver --es cmd state --es id s1
+adb -s <watch-serial> shell run-as com.pingchat.watch cat cache/testhook/results/s1.json
 ```
 
 Notes:

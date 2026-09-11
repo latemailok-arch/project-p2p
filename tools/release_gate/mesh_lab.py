@@ -2,7 +2,7 @@
 """ADB-driven mesh test orchestrator for two (or more) live devices.
 
 Drives the debug-only TestHookReceiver in the app
-(intent action: com.bitchat.droid.TEST_HOOK) to perform mesh operations:
+(intent action: com.pingchat.droid.TEST_HOOK) to perform mesh operations:
 peer scanning, connect, Noise handshake, DMs, file transfer, broadcast,
 announce, and raw packet injection.
 
@@ -38,15 +38,15 @@ if str(REPOSITORY_ROOT) not in sys.path:
 
 from tools.release_gate.android_lab import APPLICATION_ID, find_adb, run_adb
 
-TEST_HOOK_ACTION = "com.bitchat.droid.TEST_HOOK"
-TEST_HOOK_COMPONENT = f"{APPLICATION_ID}/com.bitchat.android.testhook.TestHookReceiver"
+TEST_HOOK_ACTION = "com.pingchat.droid.TEST_HOOK"
+TEST_HOOK_COMPONENT = f"{APPLICATION_ID}/com.pingchat.android.testhook.TestHookReceiver"
 RESULTS_DIR = "cache/testhook/results"
 DEVICE_TMP_DIR = "/data/local/tmp/meshlab"
 APP_FIXTURE_DIR = f"/data/data/{APPLICATION_ID}/cache/fixtures"
 
-WATCH_APPLICATION_ID = "com.bitchat.watch"
-WATCH_TEST_HOOK_ACTION = "com.bitchat.watch.TEST_HOOK"
-WATCH_TEST_HOOK_COMPONENT = f"{WATCH_APPLICATION_ID}/com.bitchat.watch.testhook.WearTestHookReceiver"
+WATCH_APPLICATION_ID = "com.pingchat.watch"
+WATCH_TEST_HOOK_ACTION = "com.pingchat.watch.TEST_HOOK"
+WATCH_TEST_HOOK_COMPONENT = f"{WATCH_APPLICATION_ID}/com.pingchat.watch.testhook.WearTestHookReceiver"
 
 PERMISSIONS = [
     "android.permission.BLUETOOTH_SCAN",
@@ -87,7 +87,7 @@ class Device:
         hook_action: str = TEST_HOOK_ACTION,
         hook_component: str = TEST_HOOK_COMPONENT,
         permissions: list[str] = PERMISSIONS,
-        activity_component: str = f"{APPLICATION_ID}/com.bitchat.android.MainActivity",
+        activity_component: str = f"{APPLICATION_ID}/com.pingchat.android.MainActivity",
     ):
         self.serial = serial
         self.alias = alias
@@ -265,7 +265,7 @@ class Device:
 
 
 class WatchDevice(Device):
-    """Pixel Watch running the com.bitchat.watch debug build.
+    """Pixel Watch running the com.pingchat.watch debug build.
 
     Same test-hook protocol as the phone; different package/hook, a smaller permission
     set (Bluetooth + notifications only), and wake tweaks that skip phone-only keyguard

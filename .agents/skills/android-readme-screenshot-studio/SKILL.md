@@ -103,7 +103,7 @@ hooks. If they cannot express the composition, add the smallest temporary
 command under:
 
 ```text
-app/src/debug/java/com/bitchat/android/testhook/
+app/src/debug/java/com/pingchat/android/testhook/
 ```
 
 The fixture should:

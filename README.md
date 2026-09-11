@@ -1,16 +1,16 @@
 <img width="256" height="256" alt="icon_128x128@2x" src="https://github.com/user-attachments/assets/90133f83-b4f6-41c6-aab9-25d0859d2a47" />
 
-## bitchat for Android
+## pingchat for Android
 
 A decentralized peer-to-peer messaging app with dual transport architecture: local Bluetooth mesh networks for offline communication and internet-based Nostr protocol for global reach. No accounts, no phone numbers, no central servers.
 
-This is the Android implementation of bitchat, fully protocol-compatible with the [iOS version](https://github.com/permissionlesstech/bitchat) for cross-platform mesh communication.
+This is the Android implementation of pingchat, fully protocol-compatible with the [iOS version](https://github.com/permissionlesstech/pingchat) for cross-platform mesh communication.
 
-[bitchat.free](http://bitchat.free)
+[pingchat.free](http://pingchat.free)
 
-[GitHub Releases](https://github.com/permissionlesstech/bitchat-android/releases)
+[GitHub Releases](https://github.com/permissionlesstech/pingchat-android/releases)
 
-[<img alt="Get it on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>](https://play.google.com/store/apps/details?id=com.bitchat.droid)
+[<img alt="Get it on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>](https://play.google.com/store/apps/details?id=com.pingchat.droid)
 
 ## See it in action
 
@@ -41,7 +41,7 @@ This project is released into the public domain. See the [LICENSE](LICENSE.md) f
 - **IRC-Style Commands**: Familiar `/join`, `/msg`, `/who` style interface
 - **Tor Support**: Built-in Tor (Arti) for private internet connectivity
 - **Emergency Wipe**: Triple-tap to instantly clear all data
-- **Cross-Platform**: Binary protocol compatible with bitchat on iOS and macOS
+- **Cross-Platform**: Binary protocol compatible with pingchat on iOS and macOS
 
 ## Technical Architecture
 
@@ -70,8 +70,8 @@ This project is released into the public domain. See the [LICENSE](LICENSE.md) f
 Requires Android Studio and the Android SDK (API 26+).
 
 ```bash
-git clone https://github.com/permissionlesstech/bitchat-android.git
-cd bitchat-android
+git clone https://github.com/permissionlesstech/pingchat-android.git
+cd pingchat-android
 ./gradlew assembleDebug
 ```
 

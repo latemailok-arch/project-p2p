@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TAG="${1:?usage: verify-github-release.sh TAG [--no-rebuild]}"
 MODE="${2:-}"
-REPOSITORY="${BITCHAT_GITHUB_REPOSITORY:-permissionlesstech/bitchat-android}"
+REPOSITORY="${PINGCHAT_GITHUB_REPOSITORY:-permissionlesstech/pingchat-android}"
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
@@ -37,23 +37,23 @@ mkdir -p "$DOWNLOAD_DIR"
 gh release download "$TAG" \
   --repo "$REPOSITORY" \
   --dir "$DOWNLOAD_DIR" \
-  --pattern 'BITCHAT_BUILDINFO.json' \
-  --pattern 'BITCHAT_SHA256SUMS' \
-  --pattern 'BITCHAT_SHA256SUMS.unsigned' \
-  --pattern 'bitchat-android-*.apk' \
-  --pattern 'bitchat-android-*.aab'
+  --pattern 'PINGCHAT_BUILDINFO.json' \
+  --pattern 'PINGCHAT_SHA256SUMS' \
+  --pattern 'PINGCHAT_SHA256SUMS.unsigned' \
+  --pattern 'pingchat-android-*.apk' \
+  --pattern 'pingchat-android-*.aab'
 
 attested_artifacts=(
-  BITCHAT_BUILDINFO.json
-  BITCHAT_SHA256SUMS.unsigned
-  bitchat-android-arm64-unsigned.apk
-  bitchat-android-armv7-unsigned.apk
-  bitchat-android-release-unsigned.aab
-  bitchat-android-universal-unsigned.apk
-  bitchat-android-wear-release-unsigned.aab
-  bitchat-android-wear-unsigned.apk
-  bitchat-android-x86-unsigned.apk
-  bitchat-android-x86_64-unsigned.apk
+  PINGCHAT_BUILDINFO.json
+  PINGCHAT_SHA256SUMS.unsigned
+  pingchat-android-arm64-unsigned.apk
+  pingchat-android-armv7-unsigned.apk
+  pingchat-android-release-unsigned.aab
+  pingchat-android-universal-unsigned.apk
+  pingchat-android-wear-release-unsigned.aab
+  pingchat-android-wear-unsigned.apk
+  pingchat-android-x86-unsigned.apk
+  pingchat-android-x86_64-unsigned.apk
 )
 for artifact in "${attested_artifacts[@]}"; do
   if [ ! -f "$DOWNLOAD_DIR/$artifact" ]; then
@@ -66,13 +66,13 @@ echo "GitHub provenance attestations for the canonical unsigned build verified."
 
 (
   cd "$DOWNLOAD_DIR"
-  "${SHA256[@]}" -c BITCHAT_SHA256SUMS
+  "${SHA256[@]}" -c PINGCHAT_SHA256SUMS
 )
 echo "GitHub release checksums verified."
 
-mv "$DOWNLOAD_DIR/BITCHAT_BUILDINFO.json" "$DOWNLOAD_DIR/BUILDINFO.json"
-mv "$DOWNLOAD_DIR/BITCHAT_SHA256SUMS" "$DOWNLOAD_DIR/SHA256SUMS"
-mv "$DOWNLOAD_DIR/BITCHAT_SHA256SUMS.unsigned" "$DOWNLOAD_DIR/SHA256SUMS.unsigned"
+mv "$DOWNLOAD_DIR/PINGCHAT_BUILDINFO.json" "$DOWNLOAD_DIR/BUILDINFO.json"
+mv "$DOWNLOAD_DIR/PINGCHAT_SHA256SUMS" "$DOWNLOAD_DIR/SHA256SUMS"
+mv "$DOWNLOAD_DIR/PINGCHAT_SHA256SUMS.unsigned" "$DOWNLOAD_DIR/SHA256SUMS.unsigned"
 
 if [ "$MODE" = "--no-rebuild" ]; then
   exit 0

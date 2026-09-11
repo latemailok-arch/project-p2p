@@ -67,7 +67,7 @@ Probe Android capabilities without storing the ADB selector:
 
 ```sh
 python3 tools/release_gate/android_lab.py probe \
-  --serial "$BITCHAT_ADB_SELECTOR" \
+  --serial "$PINGCHAT_ADB_SELECTOR" \
   --alias android-current
 ```
 
@@ -76,7 +76,7 @@ Copy only the returned logical metadata into the matrix. Validate it:
 ```sh
 python3 tools/release_gate/release_gate.py validate-matrix \
   --matrix release-gate-results/device-matrix.json \
-  --commit "$BITCHAT_RELEASE_COMMIT"
+  --commit "$PINGCHAT_RELEASE_COMMIT"
 ```
 
 The matrix validator enforces physical devices, three Android participants, two
@@ -88,7 +88,7 @@ current/legacy client versions.
 ```sh
 python3 tools/release_gate/release_gate.py init \
   --matrix release-gate-results/device-matrix.json \
-  --commit "$BITCHAT_RELEASE_COMMIT" \
+  --commit "$PINGCHAT_RELEASE_COMMIT" \
   --run-id rc-lab-01 \
   --output release-gate-results/rc-lab-01
 ```
@@ -107,7 +107,7 @@ Clear only the disposable app data on each selected lab device:
 
 ```sh
 python3 tools/release_gate/android_lab.py prepare \
-  --serial "$BITCHAT_ADB_SELECTOR" \
+  --serial "$PINGCHAT_ADB_SELECTOR" \
   --confirm-disposable-app-data
 ```
 
@@ -165,7 +165,7 @@ Capture resource snapshots during endurance work:
 
 ```sh
 python3 tools/release_gate/android_lab.py snapshot \
-  --serial "$BITCHAT_ADB_SELECTOR" \
+  --serial "$PINGCHAT_ADB_SELECTOR" \
   --alias android-current \
   --run release-gate-results/rc-lab-01 \
   --scenario END-003
@@ -342,7 +342,7 @@ See `TestHookDriver.kt` for the full command set (`ping`, `start`, `stop`,
   FragmentManager BitchatFilePacket` shows commands, results, decrypt
   failures, fragment rejects, and saved incoming files in real time.
 - Results also persist on-device at
-  `run-as com.bitchat.droid cat cache/testhook/results/<id>.json`.
+  `run-as com.pingchat.droid cat cache/testhook/results/<id>.json`.
 
 Unlike the release gate, this harness is a development aid: it prints raw
 diagnostics and does not produce a privacy-checked approval bundle.

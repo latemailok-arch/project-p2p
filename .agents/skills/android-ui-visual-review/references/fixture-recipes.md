@@ -20,16 +20,16 @@ comparison SHAs.
 
 Inspect:
 
-- `app/src/debug/java/com/bitchat/android/testhook/TestHookReceiver.kt`
-- `app/src/debug/java/com/bitchat/android/testhook/TestHookDriver.kt`
+- `app/src/debug/java/com/pingchat/android/testhook/TestHookReceiver.kt`
+- `app/src/debug/java/com/pingchat/android/testhook/TestHookDriver.kt`
 - `app/src/debug/AndroidManifest.xml`
 
 The receiver accepts:
 
 ```sh
 adb -s "$ANDROID_REVIEW_SERIAL" shell am broadcast \
-  -n com.bitchat.droid/com.bitchat.android.testhook.TestHookReceiver \
-  -a com.bitchat.droid.TEST_HOOK \
+  -n com.pingchat.droid/com.pingchat.android.testhook.TestHookReceiver \
+  -a com.pingchat.droid.TEST_HOOK \
   --es cmd "<command>" \
   --es id "<unique-result-id>"
 ```
@@ -37,7 +37,7 @@ adb -s "$ANDROID_REVIEW_SERIAL" shell am broadcast \
 Read the result rather than trusting broadcast delivery:
 
 ```sh
-adb -s "$ANDROID_REVIEW_SERIAL" shell run-as com.bitchat.droid \
+adb -s "$ANDROID_REVIEW_SERIAL" shell run-as com.pingchat.droid \
   cat "cache/testhook/results/<unique-result-id>.json"
 ```
 
@@ -133,7 +133,7 @@ the in-memory store:
 
 ```kotlin
 private fun resetNicknameFixture(context: Context): JSONObject {
-    context.getSharedPreferences("bitchat_prefs", Context.MODE_PRIVATE)
+    context.getSharedPreferences("pingchat_prefs", Context.MODE_PRIVATE)
         .edit()
         .remove("nickname")
         .commit()
